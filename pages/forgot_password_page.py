@@ -1,18 +1,21 @@
-from pages.base_page import BasePage
-from locators.password_recovery_locators import PasswordRecoveryLocators
+import allure
+from .base_page import BasePage
+from locators.forgot_password_locators import ForgotPasswordLocators
 
-class PasswordRecoveryPage(BasePage):
-    def enter_email(self, email):
-        self.driver.find_element(*PasswordRecoveryLocators.EMAIL_INPUT).send_keys(email)
+class ForgotPasswordPage(BasePage):
 
-    def click_recover_button(self):
-        self.driver.find_element(*PasswordRecoveryLocators.RECOVER_BUTTON).click()
+    @allure.step("Ввод email для восстановления: {email}")
+    def fill_email(self, email):
+        self.fill_field(ForgotPasswordLocators.EMAIL_INPUT, email)
 
-    def toggle_password_visibility(self):
-        self.driver.find_element(*PasswordRecoveryLocators.SHOW_PASSWORD_BUTTON).click()
+    @allure.step("Клик по кнопке 'Восстановить'")
+    def click_restore(self):
+        self.click(ForgotPasswordLocators.RESTORE_BUTTON)
 
-    def is_email_input_visible(self):
-        return self.driver.find_element(*PasswordRecoveryLocators.EMAIL_INPUT).is_displayed()
+    @allure.step("Клик по иконке показать/скрыть пароль")
+    def click_eye_icon(self):
+        self.click(ForgotPasswordLocators.PASSWORD_EYE_ICON)
 
+    @allure.step("Проверка, что поле пароля активно (подсвечено)")
     def is_password_field_highlighted(self):
-        return self.driver.find_element(*PasswordRecoveryLocators.PASSWORD_FIELD_ACTIVE).is_displayed()
+        return self.is_visible(ForgotPasswordLocators.ACTIVE_PASSWORD_FIELD)

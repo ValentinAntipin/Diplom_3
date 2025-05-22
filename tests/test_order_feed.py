@@ -6,35 +6,33 @@ from pages.order_feed_page import OrderFeedPage
 def test_open_order_modal(driver):
     feed = OrderFeedPage(driver)
     feed.open_order_modal()
-    assert feed.is_modal_open()
+    assert feed.is_modal_open(), "Модальное окно заказа не открылось"
 
 
 @allure.title("Счётчик 'Выполнено за всё время' увеличивается после создания заказа")
-def test_user_orders_displayed_in_feed(driver, create_order, base_url):
-    driver.get(f"{base_url}/feed")
-    assert "заказ" in driver.page_source.lower()
+def test_total_done_counter_increases(driver, create_order, base_url):
+    feed = OrderFeedPage(driver)
+    feed.go_to_order_feed(base_url)
+    assert feed.get_total_done_count() >= 1, "Счётчик всех заказов не увеличился"
 
 
 @allure.title("Счётчик 'Выполнено за сегодня' увеличивается после создания заказа")
-def test_order_done_counters_increase(driver, create_order, base_url):
-    driver.get(f"{base_url}/feed")
-    done_today = int(driver.find_element_by_class_name("done_today").text)
-    done_all = int(driver.find_element_by_class_name("done_all_time").text)
-    assert done_today >= 1
-    assert done_all >= 1
+def test_today_done_counter_increases(driver, create_order, base_url):
+    feed = OrderFeedPage(driver)
+    feed.go_to_order_feed(base_url)
+    assert feed.get_today_done_count() >= 1, "Счётчик заказов за сегодня не увеличился"
 
 
 @allure.title("После оформления заказ появляется в разделе 'В работе'")
 def test_order_appears_in_work_section(driver, create_order, base_url):
-    driver.get(f"{base_url}/feed")
-    assert str(create_order) in driver.page_source
+    feed = OrderFeedPage(driver)
+    feed.go_to_order_feed(base_url)
+    assert feed.is_order_in_work_section(str(create_order)), "Заказ не появился в 'В работе'"
 
 
 @allure.title("Заказы пользователя отображаются в ленте заказов")
 def test_user_order_visible_in_feed(driver, create_order, base_url):
-    with allure.step("Открываем ленту заказов"):
-        driver.get(f"{base_url}/feed")
-
-    with allure.step("Проверяем, что номер заказа отображается в ленте"):
-        assert str(create_order) in driver.page_source, \
-            f"Номер заказа {create_order} не найден в ленте заказов"
+    feed = OrderFeedPage(driver)
+    feed.go_to_order_feed(base_url)
+    assert feed.is_order_in_feed(str(create_order)), \
+        f"Номер заказа {create_order} не найден в ленте заказов"

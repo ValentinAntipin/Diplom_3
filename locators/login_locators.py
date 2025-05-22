@@ -6,3 +6,4 @@ class LoginLocators:
     LOGIN_BUTTON = (By.XPATH, "//button[text()='Войти']")
     FORGOT_PASSWORD_LINK = (By.LINK_TEXT, "Восстановить пароль")
     REGISTER = (By.LINK_TEXT, "Зарегистрироваться")
+    ERROR_MESSAGE = (By.CLASS_NAME, "input__error")

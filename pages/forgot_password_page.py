@@ -2,6 +2,7 @@ import allure
 from .base_page import BasePage
 from locators.forgot_password_locators import ForgotPasswordLocators
 
+
 class ForgotPasswordPage(BasePage):
 
     @allure.step("Ввод email для восстановления: {email}")
@@ -12,10 +13,10 @@ class ForgotPasswordPage(BasePage):
     def click_restore(self):
         self.click(ForgotPasswordLocators.RESTORE_BUTTON)
 
-    @allure.step("Клик по иконке показать/скрыть пароль")
+    @allure.step("Клик по иконке 'показать/скрыть пароль'")
     def click_eye_icon(self):
         self.click(ForgotPasswordLocators.PASSWORD_EYE_ICON)
 
-    @allure.step("Проверка, что поле пароля активно (подсвечено)")
+    @allure.step("Проверка, что поле пароля подсвечено (активно)")
     def is_password_field_highlighted(self):
         return self.is_visible(ForgotPasswordLocators.ACTIVE_PASSWORD_FIELD)

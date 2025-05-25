@@ -48,21 +48,21 @@ class BasePage:
             return False
 
     @allure.step("Ожидаем элемент на странице: {locator}")
-    def wait_for_element(self, locator, timeout=None):
+    def wait_for_element(self, locator, timeout=10):
         timeout = timeout or self.timeout
         return WebDriverWait(self.driver, timeout).until(
             EC.visibility_of_element_located(locator)
         )
 
     @allure.step("Ожидаем кликабельность элемента: {locator}")
-    def wait_for_element_clickable(self, locator, timeout=None):
+    def wait_for_element_clickable(self, locator, timeout=15):
         timeout = timeout or self.timeout
         return WebDriverWait(self.driver, timeout).until(
             EC.element_to_be_clickable(locator)
         )
 
     @allure.step("Ожидаем несколько элементов: {locator}")
-    def wait_for_elements(self, locator, timeout=None):
+    def wait_for_elements(self, locator, timeout=10):
         timeout = timeout or self.timeout
         return WebDriverWait(self.driver, timeout).until(
             EC.presence_of_all_elements_located(locator)
@@ -77,7 +77,7 @@ class BasePage:
         return self.driver.find_elements(*locator)
 
     @allure.step("Ожидаем, что URL содержит: {fragment}")
-    def wait_for_url_to_contain(self, fragment, timeout=5):
+    def wait_for_url_to_contain(self, fragment, timeout=10):
         WebDriverWait(self.driver, timeout).until(EC.url_contains(fragment))
 
     @allure.step("Получаем текущий URL")
@@ -102,7 +102,7 @@ class BasePage:
         )
 
     @allure.step("Ожидаем, что элемент исчезнет с экрана: {locator}")
-    def wait_for_element_to_disappear(self, locator, timeout=None):
+    def wait_for_element_to_disappear(self, locator, timeout=10):
         timeout = timeout or self.timeout
         try:
             WebDriverWait(self.driver, timeout).until_not(
@@ -113,3 +113,12 @@ class BasePage:
                           attachment_type=allure.attachment_type.PNG)
             raise AssertionError(f"Элемент не исчез: {locator}")
 
+    @allure.step("Прокрутка элементов")
+    def scroll_into_view(self, element):
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
+
+    @allure.step("Ввод текста '{text}' в элемент {locator}")
+    def send_keys(self, locator, text: str, timeout: int = 10):
+        element = self.wait_for_element(locator, timeout)
+        element.clear()
+        element.send_keys(text)

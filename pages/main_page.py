@@ -1,6 +1,5 @@
 import allure
 from selenium.common import TimeoutException
-
 from .base_page import BasePage
 from locators.main_page_locators import MainPageLocators
 
@@ -9,11 +8,15 @@ class MainPage(BasePage):
 
     @allure.step("Переход в раздел 'Конструктор'")
     def click_constructor(self):
-        self.click(MainPageLocators.CONSTRUCTOR_BUTTON)
+        element = self.wait_for_element_clickable(MainPageLocators.CONSTRUCTOR_BUTTON)
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
+        element.click()
 
     @allure.step("Переход в 'Ленту заказов'")
     def click_order_feed(self):
-        self.click(MainPageLocators.ORDER_FEED_LINK)
+        element = self.wait_for_element_clickable(MainPageLocators.ORDER_FEED_LINK)
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
+        element.click()
 
     @allure.step("Клик по ингредиенту под индексом {index}")
     def click_ingredient(self, index=0):
@@ -29,8 +32,7 @@ class MainPage(BasePage):
         if index >= len(elements):
             raise IndexError(f"Ингредиент с индексом {index} не найден. Всего элементов: {len(elements)}")
 
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", elements[index])
-
+        self.scroll_into_view(elements[index])
 
         ingredient_xpath = f"({MainPageLocators.INGREDIENT[1]})[{index + 1}]"
         self.drag_and_drop(

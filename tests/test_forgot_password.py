@@ -14,11 +14,11 @@ class TestForgotPassword:
     @allure.title("Переход на страницу восстановления пароля по кнопке 'Восстановить пароль'")
     def test_open_forgot_password_page(self, driver):
         login = LoginPage(driver)
-        forgot = ForgotPasswordPage(driver)
 
         login.open(f"{BASE_URL}/login")
         login.go_to_forgot_password()
 
+        forgot = ForgotPasswordPage(driver)
         assert forgot.is_on_forgot_password_page(), "Не произошёл переход на страницу восстановления пароля"
 
     @allure.title("Ввод почты и клик по кнопке 'Восстановить'")

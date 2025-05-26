@@ -1,5 +1,5 @@
 import allure
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import TimeoutException
 from pages.base_page import BasePage
 from locators.order_feed_locators import OrderFeedLocators
 
@@ -12,8 +12,9 @@ class OrderFeedPage(BasePage):
 
     @allure.step("Открытие модального окна заказа с индексом {index}")
     def open_order_modal(self, index=0):
-        elements = self.find_elements(OrderFeedLocators.ORDER_CARD)
+        elements = self.wait_for_elements(OrderFeedLocators.ORDER_CARD)
         if index < len(elements):
+            self.scroll_into_view(elements[index])
             elements[index].click()
         else:
             raise IndexError(f"Заказ с индексом {index} не найден. Всего элементов: {len(elements)}")
@@ -34,13 +35,16 @@ class OrderFeedPage(BasePage):
 
     @allure.step("Проверка, что заказ с номером {order_number} отображается в ленте")
     def is_order_in_feed(self, order_number: str) -> bool:
-        page_source = self.get_page_source()
-        return order_number in page_source
+        try:
+            elements = self.wait_for_elements(OrderFeedLocators.ORDER_CARD)
+            return any(order_number in el.text for el in elements)
+        except TimeoutException:
+            return False
 
     @allure.step("Проверка, что заказ с номером {order_number} отображается в секции 'В работе'")
     def is_order_in_work_section(self, order_number: str) -> bool:
         try:
-            work_section = self.find_element(OrderFeedLocators.IN_PROGRESS_SECTION)
-            return order_number in work_section.text
-        except NoSuchElementException:
+            section = self.wait_for_element(OrderFeedLocators.IN_PROGRESS_SECTION)
+            return order_number in section.text
+        except TimeoutException:
             return False

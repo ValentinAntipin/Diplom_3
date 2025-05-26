@@ -9,19 +9,20 @@ class MainPage(BasePage):
     @allure.step("Переход в раздел 'Конструктор'")
     def click_constructor(self):
         element = self.wait_for_element_clickable(MainPageLocators.CONSTRUCTOR_BUTTON)
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
+        self.scroll_into_view(element)
         element.click()
 
     @allure.step("Переход в 'Ленту заказов'")
     def click_order_feed(self):
         element = self.wait_for_element_clickable(MainPageLocators.ORDER_FEED_LINK)
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
+        self.scroll_into_view(element)
         element.click()
 
     @allure.step("Клик по ингредиенту под индексом {index}")
     def click_ingredient(self, index=0):
         elements = self.wait_for_elements(MainPageLocators.INGREDIENT)
         if index < len(elements):
+            self.scroll_into_view(elements[index])
             elements[index].click()
         else:
             raise IndexError(f"Ингредиент с индексом {index} не найден. Всего элементов: {len(elements)}")
@@ -66,7 +67,7 @@ class MainPage(BasePage):
         try:
             element = self.wait_for_element(MainPageLocators.ORDER_CONFIRMATION_TEXT, timeout)
             return "Ваш заказ начали готовить" in element.text or "идентификатор" in element.text
-        except Exception:
+        except TimeoutException:
             return False
 
     @allure.step("Проверка, что секция конструктора отображается")
